@@ -39,6 +39,17 @@ ENSURE = CORE / "scripts" / "ensure_workspace.py"
 CHECK = Path(__file__).resolve().parent / "check_tools.py"
 
 
+def missing_toolkit_files() -> list[Path]:
+    """skill 之间是相对路径引用；缺任何一个都直接报错，避免运行到一半才失败。"""
+    required = [
+        CORE / "SKILL.md",
+        CORE / "scripts" / "ensure_workspace.py",
+        SCAFFOLD,
+        CHECK,
+    ]
+    return [path for path in required if not path.exists()]
+
+
 def option(args: list[str], name: str, default: str | None = None) -> str | None:
     if name in args:
         index = args.index(name)
@@ -187,6 +198,16 @@ def parse_toolchecks(output: str) -> list[dict]:
 
 
 def main() -> int:
+    missing = missing_toolkit_files()
+    if missing:
+        print(
+            "BOOTSTRAP_FAILED missing toolkit files:\n  "
+            + "\n  ".join(str(path) for path in missing)
+            + "\n请把 reconstruction-bootstrap/core/scaffold 三个 skill 一起安装。",
+            file=sys.stderr,
+        )
+        return 1
+
     args = sys.argv[1:]
     root = Path(option(args, "--root", ".") or ".").expanduser().resolve()
     profile_arg = option(args, "--profile") or option(args, "--domain") or ""

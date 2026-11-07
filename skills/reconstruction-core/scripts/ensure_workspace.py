@@ -103,6 +103,8 @@ def write_config(path: Path, root: Path, workspace: Path) -> Path:
 
 
 def populate(workspace: Path, root: Path, force: bool = False) -> None:
+    if not TEMPLATE.is_dir():
+        raise SystemExit(f"找不到工作区模板: {TEMPLATE}")
     if workspace.exists() and any(workspace.iterdir()):
         if (workspace / "state.json").exists():
             return

@@ -130,7 +130,7 @@
         "adb"
       ],
       "setup": [
-        "安装 Android SDK Platform Tools",
+        "安装 Android SDK Platform Tools（macOS 默认在 ~/Library/Android/sdk/platform-tools/adb，需要加入 PATH）",
         "确认 adb devices 能看到目标设备"
       ],
       "notes": [
@@ -146,6 +146,7 @@
         "frida-ps"
       ],
       "setup": [
+        "pip install frida-tools（确保 frida / frida-ps 在 PATH）",
         "设备端部署 frida-server 并启动",
         "frida-ps -U 确认可见进程"
       ],

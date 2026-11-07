@@ -110,6 +110,7 @@
         "frida-ps"
       ],
       "setup": [
+        "pip install frida-tools（确保 frida / frida-ps 在 PATH）",
         "设备端部署 frida-server",
         "frida-ps -U 确认可见进程"
       ]
