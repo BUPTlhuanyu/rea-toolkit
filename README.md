@@ -11,6 +11,7 @@ rea-toolkit/
 │   ├── reconstruction-core/        # 通用流程、证据契约、工作区模板
 │   └── reconstruction-scaffold/    # 生成工作区 + 领域配置
 ├── profiles/                       # 领域配置：wps-chart、android-native、unity-game ...
+├── toolkits/                       # 通用工具：截图、裁剪、对照、回归、Frida、rea
 └── README.md
 ```
 
@@ -74,6 +75,20 @@ ln -s /Users/liaohuanyu/projects/ai/idea/rea-toolkit/profiles <project>/.comate/
 4. 检查 rea/adb/frida 等工具链；
 5. 初始化能力账本；
 6. 把后续交给 `reconstruction-core`。
+
+## 通用工具
+
+从 WPS 图表还原工程里抽出的、去掉领域常量的工具在 `toolkits/`：
+
+- `toolkits/image/`：裁剪、差异、拼 sheet、连通域/文字行测量
+- `toolkits/compare/`：参考/目标拼接 + MAE
+- `toolkits/capture/`：macOS 按窗口 ID 截图
+- `toolkits/ooxml/`：xlsx chart XML / 单元格 patch
+- `toolkits/regress/`：通用回归驱动
+- `toolkits/frida/`：spawn/attach + JSONL
+- `toolkits/rea/`：rea MCP 批处理
+
+用法和依赖见 `toolkits/README.md`。WPS 专用封装仍留在 WPS 工作区。
 
 ## 平台矩阵
 
