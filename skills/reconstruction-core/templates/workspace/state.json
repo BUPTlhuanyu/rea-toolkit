@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "currentState": "BOOTSTRAP",
+  "iteration": 0,
+  "inventoryStatus": "INCOMPLETE",
+  "runScope": {
+    "features": [],
+    "requiredCases": [],
+    "requiredRegressions": []
+  },
+  "selectedFeature": null,
+  "executionStatus": "IDLE",
+  "resumeAction": "",
+  "pendingTaskIds": [],
+  "safeToResume": true,
+  "queue": [],
+  "queueSource": "",
+  "blocked": [],
+  "lastAction": "",
+  "lastVerdict": "",
+  "features": [],
+  "environment": {},
+  "backlog": []
+}

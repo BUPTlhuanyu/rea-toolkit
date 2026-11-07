@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 1,
+  "name": "wps-chart",
+  "title": "WPS 桌面端图表引擎",
+  "platform": "desktop-native",
+  "description": "以 WPS 桌面版为唯一参考端，基于 kso.framework 反编译结果还原图表引擎，并在目标实现中逐项对齐源码与效果。",
+  "source_roots": [
+    "wps-pc/kso",
+    "wps-pc/ts-impl/src"
+  ],
+  "reference_runtime": {
+    "commands": [
+      "python3 .comate/wps-pc-chart-reconstruction/tools/run_case.py <case>"
+    ],
+    "outputs": [
+      "screenshot",
+      "runtime-jsonl"
+    ]
+  },
+  "target_runtime": {
+    "commands": [
+      "cd wps-pc/ts-impl && npm run build",
+      "cd wps-pc/ts-impl && npm test"
+    ],
+    "outputs": [
+      "dist"
+    ]
+  },
+  "comparison": {
+    "method": "wps-vs-target-screenshot",
+    "metrics": [
+      "mae",
+      "visual-verdict"
+    ],
+    "artifacts": [
+      "wps.png",
+      "target.png",
+      "cmp.png"
+    ]
+  },
+  "required_evidence": {
+    "source": [
+      "function address / symbol",
+      "callers and callees",
+      "formula / defaults / boundaries",
+      "decompiled snippet"
+    ],
+    "effect": [
+      "wps.png",
+      "target.png",
+      "cmp.png",
+      "mae and verdict"
+    ]
+  },
+  "acceptance_rules": {
+    "require_source_exact": true,
+    "require_effect_match": true,
+    "allow_approximation_as_complete": false,
+    "office_out_of_scope": true
+  },
+  "verification_commands": [
+    "cd wps-pc/ts-impl && npm run build",
+    "python3 .comate/wps-pc-chart-reconstruction/tools/regress.py --auto '<case-regex>'"
+  ],
+  "id_domains": [
+    "bar",
+    "line",
+    "area",
+    "pie",
+    "pie3d",
+    "doughnut",
+    "doughnut3d",
+    "ofpie",
+    "ofpie3d",
+    "bar3d",
+    "line3d",
+    "area3d",
+    "surface3d",
+    "radar",
+    "scatter",
+    "bubble",
+    "stock",
+    "surface",
+    "combination",
+    "axis",
+    "legend",
+    "title",
+    "dlbl",
+    "trendline",
+    "errorbar",
+    "format",
+    "datasource",
+    "chart",
+    "view3d",
+    "text"
+  ],
+  "toolchains": [
+    {
+      "id": "rea",
+      "purpose": "JADX/Ghidra 反编译与符号检索 MCP",
+      "mcp_config": "~/.comate/mcp.json",
+      "required_env": [
+        "JAVA_HOME",
+        "REA_JADX_MCP_JAR"
+      ],
+      "required_files": [
+        "${REA_JADX_MCP_JAR}",
+        "${JAVA_HOME}/bin/java"
+      ],
+      "required_commands": [
+        "python3",
+        "node",
+        "npx"
+      ],
+      "mcp_server": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "--registry=https://registry.npmjs.org",
+          "rea-agents@latest",
+          "mcp"
+        ],
+        "env": {
+          "PATH": "${PATH}",
+          "REA_JADX_MCP_JAR": "${REA_JADX_MCP_JAR}",
+          "JAVA_HOME": "${JAVA_HOME}",
+          "JAVA_TOOL_OPTIONS": "-Xmx8g"
+        },
+        "timeout": 600000,
+        "disabled": false
+      },
+      "setup": [
+        "安装 JDK 17+，设置 JAVA_HOME",
+        "下载 jadx-headless-mcp-*.jar，设置 REA_JADX_MCP_JAR",
+        "在 ~/.comate/mcp.json 的 mcpServers.rea 注册 server（可用 --fix-mcp 补齐）",
+        "重载 MCP 后运行 --check-only 确认"
+      ],
+      "notes": [
+        "REA_JADX_MCP_JAR 指向 jadx-headless-mcp-*-all.jar",
+        "JAVA_TOOL_OPTIONS=-Xmx8g 用于大 APK/JAR 反编译"
+      ]
+    }
+  ],
+  "domain_rules": [
+    "WPS 桌面版是唯一参考端；Microsoft Office 不在范围内。",
+    "源码证据来自 kso.framework 的 Ghidra/rea/objdump。",
+    "效果证据是 WPS vs 目标端截图 + 定向回归。",
+    "图表能力使用 <chart>.<feature> 语义 ID。",
+    "拟合常量必须标 PARTIAL，不能为了 MAE 静默调参。"
+  ]
+}

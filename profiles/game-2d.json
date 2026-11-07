@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "name": "game-2d",
+  "title": "2D 游戏",
+  "platform": "game-2d",
+  "description": "面向 Cocos/Laya/Unity 2D/GameMaker 等 2D 游戏的逆向复刻。源码证据来自脚本包、资源包和引擎元数据，效果参考来自固定输入脚本下的帧序列与游戏状态。",
+  "source_roots": [
+    "<game-build-dir>",
+    "<decompiled-dir>",
+    "<target-src>"
+  ],
+  "reference_runtime": {
+    "commands": [
+      "<launch-reference-game>",
+      "<drive-input-and-capture-frames>"
+    ],
+    "outputs": [
+      "frame-sequence",
+      "game-state",
+      "runtime-log"
+    ]
+  },
+  "target_runtime": {
+    "commands": [
+      "<build-target>"
+    ],
+    "outputs": [
+      "build"
+    ]
+  },
+  "comparison": {
+    "method": "frame-and-state-diff",
+    "metrics": [
+      "pixel-diff",
+      "ssim",
+      "state-diff"
+    ],
+    "artifacts": [
+      "reference-frames/",
+      "target-frames/",
+      "cmp/",
+      "state.json"
+    ]
+  },
+  "required_evidence": {
+    "source": [
+      "engine and version",
+      "script bundle / bytecode mapping",
+      "class / function / scene signature",
+      "decompiled snippet",
+      "asset atlas / animation mapping"
+    ],
+    "effect": [
+      "resolution and frame rate",
+      "reference frame sequence",
+      "target frame sequence",
+      "input script",
+      "verdict"
+    ]
+  },
+  "acceptance_rules": {
+    "require_source_exact": true,
+    "require_effect_match": true,
+    "allow_approximation_as_complete": false
+  },
+  "verification_commands": [
+    "<target-test-command>"
+  ],
+  "id_domains": [
+    "scene",
+    "sprite",
+    "animation",
+    "ui",
+    "input",
+    "physics",
+    "audio",
+    "asset",
+    "network",
+    "gameplay"
+  ],
+  "toolchains": [
+    {
+      "id": "engine",
+      "purpose": "识别引擎并恢复脚本/资源",
+      "required_commands": [
+        "python3",
+        "node"
+      ],
+      "optional_commands": [
+        "frida",
+        "AssetRipper",
+        "AssetStudio",
+        "cocos2d-js"
+      ],
+      "setup": [
+        "先判断引擎类型（Cocos/Laya/Unity 2D/GameMaker/自研）",
+        "按引擎选择脚本解包和资源导出工具"
+      ],
+      "notes": [
+        "记录引擎版本和脚本语言（JS/TS/Lua/C#/GML）。",
+        "Cocos/Laya 的 jsb 包优先找未加密 bundle。"
+      ]
+    }
+  ],
+  "domain_rules": [
+    "记录引擎、版本、分辨率、帧率和资源包 hash。",
+    "帧对照固定输入脚本、时间步长和随机种子。",
+    "动画/粒子/物理差异用容差和状态轨迹判定。",
+    "脚本加密无法还原时标 NONPORTABLE，并说明替代证据。"
+  ]
+}

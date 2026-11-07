@@ -1,0 +1,11 @@
+{
+  "runId": "YYYY-MM-DD-<feature-id>-NN",
+  "feature": "<feature-id>",
+  "date": "YYYY-MM-DD",
+  "command": "<reproduction command>",
+  "baseline": "runs/regress-baseline",
+  "cases": [],
+  "result": "PENDING",
+  "regressions": [],
+  "notes": ""
+}

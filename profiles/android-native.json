@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 1,
+  "name": "android-native",
+  "title": "Android 原生应用",
+  "platform": "mobile-android",
+  "description": "面向 Android APK/AAB 的逆向复刻。反编译优先用 rea/jadx，效果参考来自设备截图、UI 树和 logcat，运行时行为用 Frida 探针。",
+  "source_roots": [
+    "<apk-or-decompiled-dir>",
+    "<target-src>"
+  ],
+  "reference_runtime": {
+    "commands": [
+      "adb install -r <reference.apk>",
+      "adb shell am start -n <package>/<activity>",
+      "adb exec-out screencap -p > reference.png",
+      "adb shell uiautomator dump /sdcard/ui.xml && adb pull /sdcard/ui.xml",
+      "adb logcat -d > reference.logcat"
+    ],
+    "outputs": [
+      "screenshot",
+      "ui-tree",
+      "logcat",
+      "frida-jsonl"
+    ]
+  },
+  "target_runtime": {
+    "commands": [
+      "<build-target-apk>",
+      "adb install -r <target.apk>"
+    ],
+    "outputs": [
+      "apk"
+    ]
+  },
+  "comparison": {
+    "method": "device-screenshot-and-ui-tree",
+    "metrics": [
+      "pixel-diff",
+      "ui-tree-diff",
+      "log-event-diff"
+    ],
+    "artifacts": [
+      "reference.png",
+      "target.png",
+      "cmp.png",
+      "reference.ui.xml",
+      "target.ui.xml"
+    ]
+  },
+  "required_evidence": {
+    "source": [
+      "APK versionName/versionCode and hash",
+      "class / method signature",
+      "smali or jadx snippet",
+      "callers and callees"
+    ],
+    "effect": [
+      "device model and Android version",
+      "reference screenshot",
+      "target screenshot",
+      "ui tree",
+      "logcat / frida jsonl"
+    ]
+  },
+  "acceptance_rules": {
+    "require_source_exact": true,
+    "require_effect_match": true,
+    "allow_approximation_as_complete": false
+  },
+  "verification_commands": [
+    "<target-test-command>",
+    "adb shell am force-stop <package>"
+  ],
+  "id_domains": [
+    "app",
+    "ui",
+    "activity",
+    "service",
+    "storage",
+    "network",
+    "protocol",
+    "crypto",
+    "render"
+  ],
+  "toolchains": [
+    {
+      "id": "rea",
+      "purpose": "JADX 反编译与类/方法检索 MCP",
+      "mcp_config": "~/.comate/mcp.json",
+      "required_env": [
+        "JAVA_HOME",
+        "REA_JADX_MCP_JAR"
+      ],
+      "required_files": [
+        "${REA_JADX_MCP_JAR}",
+        "${JAVA_HOME}/bin/java"
+      ],
+      "required_commands": [
+        "python3",
+        "node",
+        "npx"
+      ],
+      "mcp_server": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "--registry=https://registry.npmjs.org",
+          "rea-agents@latest",
+          "mcp"
+        ],
+        "env": {
+          "PATH": "${PATH}",
+          "REA_JADX_MCP_JAR": "${REA_JADX_MCP_JAR}",
+          "JAVA_HOME": "${JAVA_HOME}",
+          "JAVA_TOOL_OPTIONS": "-Xmx8g"
+        },
+        "timeout": 600000,
+        "disabled": false
+      },
+      "setup": [
+        "安装 JDK 17+",
+        "下载 jadx-headless-mcp-*.jar",
+        "在 ~/.comate/mcp.json 注册 rea"
+      ]
+    },
+    {
+      "id": "adb",
+      "purpose": "安装、启动、截图、UI 树和日志",
+      "required_commands": [
+        "adb"
+      ],
+      "setup": [
+        "安装 Android SDK Platform Tools",
+        "确认 adb devices 能看到目标设备"
+      ],
+      "notes": [
+        "截图优先用 adb exec-out screencap -p，避免 CRLF 损坏 PNG。",
+        "UI 树用 uiautomator dump；WebView 内容需另用 CDP。"
+      ]
+    },
+    {
+      "id": "frida",
+      "purpose": "运行时 hook、参数/返回值追踪",
+      "required_commands": [
+        "frida",
+        "frida-ps"
+      ],
+      "setup": [
+        "设备端部署 frida-server 并启动",
+        "frida-ps -U 确认可见进程"
+      ],
+      "notes": [
+        "一次会话跑多个 hook，结果写一个 JSONL。"
+      ]
+    }
+  ],
+  "domain_rules": [
+    "记录设备型号、Android 版本、APK 版本和 hash；换设备后效果不可直接比较。",
+    "截图前固定分辨率、DPI、字体缩放和深色/浅色模式。",
+    "WebView/Flutter/React Native 内容优先用对应运行时探针，而不是只看 uiautomator。",
+    "加固/混淆导致源码不可读时，标 NONPORTABLE 或改用运行时证据。"
+  ]
+}

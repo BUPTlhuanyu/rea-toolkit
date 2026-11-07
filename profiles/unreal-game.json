@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "name": "unreal-game",
+  "title": "Unreal Engine 游戏",
+  "platform": "game-3d",
+  "description": "面向 UE4/UE5 游戏的逆向复刻。源码/资源证据来自 pak 解包、Blueprint/资产导出和二进制分析，效果参考来自固定输入脚本下的帧序列与场景状态。",
+  "source_roots": [
+    "<game-build-dir>",
+    "<unpacked-dir>",
+    "<target-src>"
+  ],
+  "reference_runtime": {
+    "commands": [
+      "<launch-reference-game>",
+      "<drive-input-and-capture-frames>"
+    ],
+    "outputs": [
+      "frame-sequence",
+      "scene-state",
+      "runtime-log"
+    ]
+  },
+  "target_runtime": {
+    "commands": [
+      "<build-target>"
+    ],
+    "outputs": [
+      "build"
+    ]
+  },
+  "comparison": {
+    "method": "frame-and-scene-diff",
+    "metrics": [
+      "ssim",
+      "pixel-delta",
+      "scene-state-diff"
+    ],
+    "artifacts": [
+      "reference-frames/",
+      "target-frames/",
+      "cmp/",
+      "timeline.json"
+    ]
+  },
+  "required_evidence": {
+    "source": [
+      "UE version and build configuration",
+      "pak / utoc / ucas mapping",
+      "Blueprint or asset path",
+      "function / symbol / vtable",
+      "unpacked or decompiled snippet"
+    ],
+    "effect": [
+      "resolution / quality / frame rate",
+      "reference frame sequence",
+      "target frame sequence",
+      "input script",
+      "verdict"
+    ]
+  },
+  "acceptance_rules": {
+    "require_source_exact": true,
+    "require_effect_match": true,
+    "allow_approximation_as_complete": false
+  },
+  "verification_commands": [
+    "<target-test-command>"
+  ],
+  "id_domains": [
+    "world",
+    "camera",
+    "render",
+    "material",
+    "animation",
+    "physics",
+    "input",
+    "ui",
+    "asset",
+    "network",
+    "gameplay"
+  ],
+  "toolchains": [
+    {
+      "id": "pak",
+      "purpose": "pak/utoc/ucas 解包与资源查看",
+      "required_commands": [
+        "python3"
+      ],
+      "optional_commands": [
+        "UnrealPak",
+        "repak",
+        "FModel"
+      ],
+      "setup": [
+        "确认 UE 版本和加密方式",
+        "用 FModel/repak/UnrealPak 解包",
+        "导出 Blueprint、材质、动画和场景"
+      ],
+      "notes": [
+        "AES 加密 pak 需要记录 key 来源（仅限授权环境）。",
+        "FModel 是 GUI，不要求出现在 PATH。"
+      ]
+    },
+    {
+      "id": "runtime",
+      "purpose": "运行时符号、UObject 和函数追踪",
+      "required_commands": [
+        "python3"
+      ],
+      "optional_commands": [
+        "frida",
+        "frida-ps"
+      ],
+      "setup": [
+        "桌面端用 Frida attach；必要时配合 UE4SS/UE5SS"
+      ],
+      "notes": [
+        "优先 hook UObject 属性和 Gameplay 关键路径。"
+      ]
+    }
+  ],
+  "domain_rules": [
+    "记录 UE 版本、渲染器（Deferred/Forward）、Lumen/Nanite 开关和质量档位。",
+    "帧对照必须固定分辨率、画质、时间步长和随机种子。",
+    "Blueprint 逻辑优先导出为可读图/伪代码，再决定是否复刻到目标语言。",
+    "加密资源无法解包时标 NONPORTABLE，并说明替代证据。"
+  ]
+}

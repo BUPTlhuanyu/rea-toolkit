@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "",
+  "mappingNote": "capabilities is a candidate set; refine per case when editing it.",
+  "summary": {
+    "total": 0,
+    "provided": 0,
+    "derived": 0,
+    "mapped": 0,
+    "unmapped": 0
+  },
+  "cases": []
+}

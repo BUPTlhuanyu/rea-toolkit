@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "name": "unity-game",
+  "title": "Unity 游戏 / 3D 应用",
+  "platform": "game-3d",
+  "description": "面向 Unity IL2CPP/Mono 游戏的逆向复刻。源码证据来自 global-metadata、Il2CppDumper、AssetRipper 和场景/资源解析，效果参考来自录屏、帧截图和场景状态。",
+  "source_roots": [
+    "<game-build-dir>",
+    "<decompiled-dir>",
+    "<target-src>"
+  ],
+  "reference_runtime": {
+    "commands": [
+      "<launch-reference-game>",
+      "<drive-input-and-capture-frames>"
+    ],
+    "outputs": [
+      "frame-sequence",
+      "scene-state",
+      "runtime-log",
+      "frida-jsonl"
+    ]
+  },
+  "target_runtime": {
+    "commands": [
+      "<build-target>"
+    ],
+    "outputs": [
+      "build"
+    ]
+  },
+  "comparison": {
+    "method": "frame-and-scene-diff",
+    "metrics": [
+      "ssim",
+      "pixel-delta",
+      "scene-state-diff"
+    ],
+    "artifacts": [
+      "reference-frames/",
+      "target-frames/",
+      "cmp/",
+      "timeline.json"
+    ]
+  },
+  "required_evidence": {
+    "source": [
+      "Unity version and backend (Mono/IL2CPP)",
+      "global-metadata.dat hash",
+      "class / method / field signature",
+      "decompiled or dumped snippet",
+      "asset bundle / serialized file mapping"
+    ],
+    "effect": [
+      "resolution / quality / frame rate",
+      "reference frame sequence",
+      "target frame sequence",
+      "input script",
+      "verdict"
+    ]
+  },
+  "acceptance_rules": {
+    "require_source_exact": true,
+    "require_effect_match": true,
+    "allow_approximation_as_complete": false
+  },
+  "verification_commands": [
+    "<target-test-command>"
+  ],
+  "id_domains": [
+    "scene",
+    "camera",
+    "render",
+    "shader",
+    "animation",
+    "physics",
+    "input",
+    "ui",
+    "asset",
+    "network",
+    "gameplay"
+  ],
+  "toolchains": [
+    {
+      "id": "il2cpp",
+      "purpose": "IL2CPP 元数据与方法恢复",
+      "required_commands": [
+        "python3"
+      ],
+      "optional_commands": [
+        "Il2CppDumper",
+        "il2cppdumper"
+      ],
+      "setup": [
+        "准备 GameAssembly.dll / libil2cpp.so 与 global-metadata.dat",
+        "运行 Il2CppDumper 生成 dump.cs、il2cpp.h 和脚本",
+        "把输出放到 source_roots 下"
+      ],
+      "notes": [
+        "先确认 Unity 版本和 IL2CPP 版本，再选 dumper。",
+        "dump.cs 只作为入口；关键方法仍需看反汇编。"
+      ]
+    },
+    {
+      "id": "assets",
+      "purpose": "资源、场景和 AssetBundle 还原",
+      "required_commands": [
+        "python3"
+      ],
+      "optional_commands": [
+        "AssetRipper",
+        "AssetStudio",
+        "UnityPy"
+      ],
+      "setup": [
+        "安装 AssetRipper 或 UnityPy",
+        "导出场景、Prefab、Texture、AnimationClip"
+      ],
+      "notes": [
+        "记录资源文件 hash；不同版本资源格式可能不同。"
+      ]
+    },
+    {
+      "id": "frida",
+      "purpose": "运行时方法/字段追踪",
+      "required_commands": [
+        "python3"
+      ],
+      "optional_commands": [
+        "frida",
+        "frida-ps"
+      ],
+      "setup": [
+        "桌面端直接用 Frida attach；移动端部署 frida-server"
+      ],
+      "notes": [
+        "一次会话同时 hook 输入、相机、渲染关键方法。"
+      ]
+    }
+  ],
+  "domain_rules": [
+    "记录 Unity 版本、渲染管线（Built-in/URP/HDRP）、图形 API 和质量档位。",
+    "帧对照必须固定分辨率、画质、时间步长和随机种子。",
+    "物理/动画/粒子存在浮点或时间相关差异时，用容差和状态轨迹判定，不只看单帧。",
+    "资源不可还原时标 NONPORTABLE，并说明替代实现。"
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "name": "web-app",
+  "title": "Web 应用 / 前端渲染",
+  "platform": "web",
+  "description": "面向 Web 应用的复刻。源码证据来自构建产物、source map、网络请求和运行时对象；效果参考来自浏览器截图、DOM/无障碍树和网络回放。",
+  "source_roots": [
+    "<downloaded-assets-dir>",
+    "<target-src>"
+  ],
+  "reference_runtime": {
+    "commands": [
+      "<launch-reference-with-cdp>",
+      "<drive-actions-and-capture>"
+    ],
+    "outputs": [
+      "screenshot",
+      "dom-snapshot",
+      "network-har"
+    ]
+  },
+  "target_runtime": {
+    "commands": [
+      "npm run build",
+      "npm run preview"
+    ],
+    "outputs": [
+      "dist"
+    ]
+  },
+  "comparison": {
+    "method": "browser-screenshot-and-dom",
+    "metrics": [
+      "pixel-diff",
+      "dom-diff",
+      "network-diff"
+    ],
+    "artifacts": [
+      "reference.png",
+      "target.png",
+      "cmp.png",
+      "reference.dom.json",
+      "target.dom.json"
+    ]
+  },
+  "required_evidence": {
+    "source": [
+      "asset URL and hash",
+      "source map or deobfuscated snippet",
+      "API endpoint and payload schema",
+      "runtime object / call stack"
+    ],
+    "effect": [
+      "browser and viewport",
+      "reference screenshot",
+      "target screenshot",
+      "DOM/network capture",
+      "verdict"
+    ]
+  },
+  "acceptance_rules": {
+    "require_source_exact": true,
+    "require_effect_match": true,
+    "allow_approximation_as_complete": false
+  },
+  "verification_commands": [
+    "npm run build"
+  ],
+  "id_domains": [
+    "ui",
+    "page",
+    "component",
+    "state",
+    "network",
+    "protocol",
+    "storage",
+    "render",
+    "worker"
+  ],
+  "toolchains": [
+    {
+      "id": "browser",
+      "purpose": "CDP 采集、截图、DOM/网络导出",
+      "required_commands": [
+        "node",
+        "npx",
+        "python3"
+      ],
+      "optional_commands": [
+        "google-chrome",
+        "chromium",
+        "playwright"
+      ],
+      "setup": [
+        "安装 Chrome/Chromium 并开启远程调试端口",
+        "安装 Playwright 或使用 CDP 脚本"
+      ],
+      "notes": [
+        "固定 viewport、DPR、时区和 locale 后再对比截图。",
+        "动态内容用固定数据或网络回放，避免随机性。"
+      ]
+    }
+  ],
+  "domain_rules": [
+    "记录浏览器版本、viewport、DPR、时区、locale 和登录态。",
+    "动态请求必须回放或固定数据；否则差异不可归因。",
+    "Canvas/WebGL/Worker 内容优先抓运行时状态，不只看 DOM。",
+    "跨域/鉴权导致无法采集时标 NO_REFERENCE，并说明限制。"
+  ]
+}

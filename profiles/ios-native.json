@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "name": "ios-native",
+  "title": "iOS 原生应用",
+  "platform": "mobile-ios",
+  "description": "面向 IPA/Mach-O 的 iOS 逆向复刻。源码证据来自 class-dump/otool/LLDB，运行时用 Frida，效果参考来自模拟器或真机截图。",
+  "source_roots": [
+    "<ipa-or-macho-dir>",
+    "<target-src>"
+  ],
+  "reference_runtime": {
+    "commands": [
+      "ideviceinstaller -i <reference.ipa>",
+      "idevicescreenshot reference.png",
+      "idevicesyslog > reference.syslog"
+    ],
+    "outputs": [
+      "screenshot",
+      "syslog",
+      "frida-jsonl"
+    ]
+  },
+  "target_runtime": {
+    "commands": [
+      "<build-target-ipa>"
+    ],
+    "outputs": [
+      "ipa"
+    ]
+  },
+  "comparison": {
+    "method": "device-screenshot",
+    "metrics": [
+      "pixel-diff",
+      "view-hierarchy-diff"
+    ],
+    "artifacts": [
+      "reference.png",
+      "target.png",
+      "cmp.png"
+    ]
+  },
+  "required_evidence": {
+    "source": [
+      "IPA version and hash",
+      "Mach-O slice / architecture",
+      "class / selector / method signature",
+      "otool or class-dump snippet"
+    ],
+    "effect": [
+      "device and iOS version",
+      "reference screenshot",
+      "target screenshot",
+      "syslog / frida jsonl"
+    ]
+  },
+  "acceptance_rules": {
+    "require_source_exact": true,
+    "require_effect_match": true,
+    "allow_approximation_as_complete": false
+  },
+  "verification_commands": [
+    "<target-test-command>"
+  ],
+  "id_domains": [
+    "app",
+    "ui",
+    "view",
+    "storage",
+    "network",
+    "protocol",
+    "crypto",
+    "render"
+  ],
+  "toolchains": [
+    {
+      "id": "ios-tools",
+      "purpose": "IPA 解包、Mach-O 分析、设备截图和日志",
+      "required_commands": [
+        "python3"
+      ],
+      "optional_commands": [
+        "frida",
+        "frida-ps",
+        "idevicescreenshot",
+        "ideviceinfo",
+        "idevicesyslog",
+        "ideviceinstaller",
+        "otool",
+        "class-dump",
+        "lldb"
+      ],
+      "setup": [
+        "安装 libimobiledevice 工具集",
+        "越狱设备部署 frida-server；非越狱设备用注入版 IPA",
+        "确认 ideviceinfo 能识别设备"
+      ],
+      "notes": [
+        "class-dump 对 Swift 符号支持有限，必要时结合 Swift demangle。",
+        "截图前固定设备型号、iOS 版本、外观模式和字体大小。"
+      ]
+    },
+    {
+      "id": "frida",
+      "purpose": "运行时 hook、参数/返回值追踪",
+      "required_commands": [
+        "frida"
+      ],
+      "optional_commands": [
+        "frida-ps"
+      ],
+      "setup": [
+        "设备端部署 frida-server",
+        "frida-ps -U 确认可见进程"
+      ]
+    }
+  ],
+  "domain_rules": [
+    "记录设备型号、iOS 版本、IPA 版本和 hash。",
+    "Swift/Objective-C 符号都要保留 mangled 名称，便于回查。",
+    "非越狱环境无法动态注入时，只做静态 + 截图对照，并标 NO_REFERENCE/PARTIAL。"
+  ]
+}

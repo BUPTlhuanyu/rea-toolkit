@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "name": "<domain>",
+  "title": "<领域标题>",
+  "platform": "<desktop-native|mobile-android|mobile-ios|web|game-2d|game-3d>",
+  "description": "<这个领域复刻什么、参考端是谁、验收看什么>",
+  "source_roots": [
+    "<decompiled-dir>",
+    "<target-src>"
+  ],
+  "reference_runtime": {
+    "commands": [
+      "<launch-reference>",
+      "<drive-input-and-capture>"
+    ],
+    "outputs": [
+      "screenshot",
+      "runtime-log"
+    ]
+  },
+  "target_runtime": {
+    "commands": [
+      "<build-target>"
+    ],
+    "outputs": [
+      "dist"
+    ]
+  },
+  "comparison": {
+    "method": "<screenshot|frame-diff|dom-diff|protocol-diff>",
+    "metrics": [
+      "<metric>"
+    ],
+    "artifacts": [
+      "reference",
+      "target",
+      "cmp"
+    ]
+  },
+  "required_evidence": {
+    "source": [
+      "<source evidence item>"
+    ],
+    "effect": [
+      "<effect evidence item>"
+    ]
+  },
+  "acceptance_rules": {
+    "require_source_exact": true,
+    "require_effect_match": true,
+    "allow_approximation_as_complete": false
+  },
+  "verification_commands": [
+    "<test-command>"
+  ],
+  "id_domains": [
+    "<domain-segment>"
+  ],
+  "toolchains": [
+    {
+      "id": "<tool-id>",
+      "purpose": "<这个工具负责什么>",
+      "mcp_config": "~/.comate/mcp.json",
+      "required_env": [
+        "<ENV_NAME>"
+      ],
+      "required_files": [
+        "${ENV_NAME}/path"
+      ],
+      "required_commands": [
+        "<command>"
+      ],
+      "optional_commands": [
+        "<gui-command>"
+      ],
+      "notes": [
+        "<手动检查/版本注意事项>"
+      ],
+      "setup": [
+        "<安装或配置步骤>"
+      ]
+    }
+  ],
+  "domain_rules": [
+    "<这个领域特有的差异归因和验收规则>"
+  ]
+}

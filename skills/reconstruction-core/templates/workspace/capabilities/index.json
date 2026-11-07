@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "",
+  "sources": [],
+  "summary": {
+    "capabilities": 0,
+    "cases": {
+      "total": 0,
+      "provided": 0,
+      "derived": 0,
+      "mapped": 0,
+      "unmapped": 0
+    }
+  },
+  "capabilities": [],
+  "backlog": []
+}

@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "name": "desktop-native",
+  "title": "桌面端原生应用",
+  "platform": "desktop-native",
+  "description": "面向 Windows/macOS/Linux 原生桌面程序的逆向复刻。以反编译/调试器证据为主，以 UI 截图或自动化树作为效果参考。",
+  "source_roots": [
+    "<decompiled-dir>",
+    "<target-src>"
+  ],
+  "reference_runtime": {
+    "commands": [
+      "<launch-reference-app-and-drive-input>"
+    ],
+    "outputs": [
+      "screenshot",
+      "ui-tree",
+      "runtime-log"
+    ]
+  },
+  "target_runtime": {
+    "commands": [
+      "<build-target>"
+    ],
+    "outputs": [
+      "binary-or-dist"
+    ]
+  },
+  "comparison": {
+    "method": "ui-screenshot-and-tree",
+    "metrics": [
+      "pixel-diff",
+      "ui-tree-diff"
+    ],
+    "artifacts": [
+      "reference.png",
+      "target.png",
+      "cmp.png"
+    ]
+  },
+  "required_evidence": {
+    "source": [
+      "binary hash and version",
+      "function address / symbol",
+      "decompiled snippet",
+      "callers and callees"
+    ],
+    "effect": [
+      "reference screenshot",
+      "target screenshot",
+      "ui tree or log",
+      "verdict"
+    ]
+  },
+  "acceptance_rules": {
+    "require_source_exact": true,
+    "require_effect_match": true,
+    "allow_approximation_as_complete": false
+  },
+  "verification_commands": [
+    "<target-test-command>"
+  ],
+  "id_domains": [
+    "app",
+    "ui",
+    "core",
+    "io",
+    "protocol",
+    "render",
+    "storage"
+  ],
+  "toolchains": [
+    {
+      "id": "disassembler",
+      "purpose": "反汇编/反编译与交叉引用",
+      "required_commands": [
+        "python3"
+      ],
+      "optional_commands": [
+        "ghidraRun",
+        "analyzeHeadless",
+        "ida64",
+        "objdump",
+        "lldb",
+        "gdb"
+      ],
+      "setup": [
+        "安装 Ghidra 或 IDA，并创建项目",
+        "可选：安装 Frida 用于运行时 hook"
+      ],
+      "notes": [
+        "GUI 工具不要求出现在 PATH；在 notes 里记录实际路径。",
+        "优先记录函数地址、调用链、常量表和边界条件。"
+      ]
+    }
+  ],
+  "domain_rules": [
+    "参考端版本必须与采集截图/日志时一致。",
+    "UI 自动化无法稳定复现时，记录为 ACCEPTED_NONPORTABLE 并说明原因。",
+    "平台相关的字体/DPI/窗口装饰差异单独归因。"
+  ]
+}
