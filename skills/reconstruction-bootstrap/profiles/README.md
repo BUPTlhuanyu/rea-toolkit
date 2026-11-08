@@ -1,5 +1,8 @@
 # profiles
 
+> 规范位置：`skills/reconstruction-bootstrap/profiles/`。这样 `npx skills add`
+> 复制 bootstrap skill 时会自动带上全部 profile；顶层 `profiles/` 只是兼容软链。
+
 `reconstruction-core` 的领域配置。每个 profile 声明：
 
 - 平台与领域

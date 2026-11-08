@@ -50,6 +50,7 @@ def profile_dirs(root: Path) -> list[Path]:
     env = os.environ.get("RECONSTRUCTION_PROFILES")
     candidates = [
         Path(env).expanduser() if env else None,
+        SKILL_DIR.parent / "reconstruction-bootstrap" / "profiles",
         TOOLKIT / "profiles",
         SKILL_DIR.parent / "profiles",
         root / ".comate" / "profiles",

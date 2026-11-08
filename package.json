@@ -1,0 +1,22 @@
+{
+  "name": "rea-toolkit",
+  "version": "0.1.0",
+  "description": "Natural-language reconstruction skill toolkit: bootstrap, core pipeline, profiles and generic capture/compare/regression tools.",
+  "private": true,
+  "type": "commonjs",
+  "bin": {
+    "rea-toolkit": "bin/rea-toolkit.js"
+  },
+  "files": [
+    "bin",
+    "skills",
+    "toolkits",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node bin/rea-toolkit.js --help"
+  }
+}
