@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Generic regression runner: cases -> shoot -> compare -> MAE -> baseline diff.
+"""Generic regression runner: cases -> shoot -> metrics -> baseline diff.
+
+指标默认包含全局 MAE + block 指标（`maxBlock` / `focusBlocks`），避免小范围
+差异被整图 MAE 稀释。也可用 `--max-block-threshold` / `--focus-blocks-threshold`
+把“MAE 通过但局部很差”的 case 标成 `PIXEL_DIFF`。
 
 cases.json：
 [
@@ -22,7 +26,7 @@ cases.json：
   {case} {reference} {target} {cmp} {out_dir} {root}
 
 状态：
-  MATCH / DIFF / REGRESSION / NO_REFERENCE / MISSING
+  MATCH / PIXEL_DIFF / DIFF / REGRESSION / NO_REFERENCE / MISSING
 
 默认有 regression 时退出码 1；`--allow-regression` 改为 0。
 """
@@ -36,8 +40,9 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-import numpy as np
-from PIL import Image
+TOOLKITS = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(TOOLKITS))
+from metrics.focus import focus_metrics, load_rgb  # noqa: E402
 
 
 def load_cases(path: Path) -> list[dict]:
@@ -75,18 +80,6 @@ def run_command(command: str, cwd: Path) -> tuple[int, str, str]:
     return process.returncode, process.stdout, process.stderr
 
 
-def mae(reference: Path, target: Path) -> float:
-    a = np.asarray(Image.open(reference).convert("RGB")).astype(int)
-    b = np.asarray(Image.open(target).convert("RGB")).astype(int)
-    if a.shape != b.shape:
-        b = np.asarray(
-            Image.open(target).convert("RGB").resize(
-                (a.shape[1], a.shape[0]), Image.LANCZOS
-            )
-        ).astype(int)
-    return round(float(np.abs(a - b).mean()), 3)
-
-
 def safe_name(case: str) -> str:
     return case.replace("/", "__").replace("\\", "__")
 
@@ -100,6 +93,16 @@ def main() -> int:
     parser.add_argument("--compare", default=None, help="对照图命令模板")
     parser.add_argument("--baseline-dir", default=None)
     parser.add_argument("--match-mae", type=float, default=2.0)
+    parser.add_argument("--block", type=int, default=32,
+                        help="focus 指标的 block 大小")
+    parser.add_argument("--focus-threshold", type=float, default=15.0,
+                        help="block 分数超过该值计为 focus block")
+    parser.add_argument("--max-block-threshold", type=float, default=None,
+                        help="全局 MAE 通过但 maxBlock 超过该值时标 PIXEL_DIFF")
+    parser.add_argument("--focus-blocks-threshold", type=int, default=None,
+                        help="全局 MAE 通过但 focusBlocks 超过该值时标 PIXEL_DIFF")
+    parser.add_argument("--baseline-metric", choices=("mae", "maxBlock", "focusBlocks"),
+                        default="mae", help="baseline delta 使用哪个指标")
     parser.add_argument("--fail-delta", type=float, default=0.05)
     parser.add_argument("--allow-regression", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
@@ -152,13 +155,32 @@ def main() -> int:
             rows.append({"case": case, "status": "MISSING", "target": str(target)})
             continue
 
-        score = mae(reference, target)
+        reference_pixels = load_rgb(reference)
+        target_pixels = load_rgb(target)
+        metrics = focus_metrics(
+            reference_pixels,
+            target_pixels,
+            block=args.block,
+            focus_threshold=args.focus_threshold,
+        )
+        score = metrics["mae"]
         old = None
         baseline = baseline_dir / f"{safe_name(case)}.png" if baseline_dir else None
         if baseline and baseline.exists():
-            old = mae(reference, baseline)
-        delta = round(score - old, 3) if old is not None else None
+            baseline_metrics = focus_metrics(
+                reference_pixels,
+                load_rgb(baseline),
+                block=args.block,
+                focus_threshold=args.focus_threshold,
+            )
+            old = baseline_metrics[args.baseline_metric]
+        current = metrics[args.baseline_metric]
+        delta = round(current - old, 3) if old is not None else None
         status = "MATCH" if score <= args.match_mae else "DIFF"
+        if status == "MATCH" and args.max_block_threshold is not None and metrics["maxBlock"] > args.max_block_threshold:
+            status = "PIXEL_DIFF"
+        if status == "MATCH" and args.focus_blocks_threshold is not None and metrics["focusBlocks"] > args.focus_blocks_threshold:
+            status = "PIXEL_DIFF"
         if delta is not None and delta > args.fail_delta:
             status = "REGRESSION"
             regressions += 1
@@ -181,7 +203,13 @@ def main() -> int:
             "case": case,
             "status": status,
             "mae": score,
-            "baseline_mae": old,
+            "maxBlock": metrics["maxBlock"],
+            "focusBlocks": metrics["focusBlocks"],
+            "focusAreaPct": metrics["focusAreaPct"],
+            "worstBlock": metrics["worstBlock"],
+            "baseline_mae": old if args.baseline_metric == "mae" else None,
+            "baseline_metric": args.baseline_metric,
+            "baseline_value": old,
             "delta": delta,
             "reference": str(reference),
             "target": str(target),
@@ -191,11 +219,16 @@ def main() -> int:
         rows.append(row)
         old_text = f"{old:.3f}" if old is not None else "-"
         delta_text = f"{delta:+.3f}" if delta is not None else "-"
-        print(f"{case}\t{status}\tmae={score:.3f}\told={old_text}\tdelta={delta_text}")
+        print(
+            f"{case}\t{status}\tmae={score:.3f}\t"
+            f"maxBlock={metrics['maxBlock']:.2f}\tfocus={metrics['focusBlocks']}\t"
+            f"old={old_text}\tdelta={delta_text}"
+        )
 
     summary = {
         "total": len(rows),
         "match": sum(row["status"] == "MATCH" for row in rows),
+        "pixelDiff": sum(row["status"] == "PIXEL_DIFF" for row in rows),
         "diff": sum(row["status"] == "DIFF" for row in rows),
         "regression": sum(row["status"] == "REGRESSION" for row in rows),
         "noReference": sum(row["status"] == "NO_REFERENCE" for row in rows),
@@ -213,6 +246,11 @@ def main() -> int:
         "compare": args.compare,
         "baselineDir": str(baseline_dir) if baseline_dir else None,
         "matchMae": args.match_mae,
+        "block": args.block,
+        "focusThreshold": args.focus_threshold,
+        "maxBlockThreshold": args.max_block_threshold,
+        "focusBlocksThreshold": args.focus_blocks_threshold,
+        "baselineMetric": args.baseline_metric,
         "failDelta": args.fail_delta,
     }
     (out_dir / "run.json").write_text(

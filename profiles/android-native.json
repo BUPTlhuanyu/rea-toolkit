@@ -35,7 +35,9 @@
   "comparison": {
     "method": "device-screenshot-and-ui-tree",
     "metrics": [
-      "pixel-diff",
+      "mae",
+      "maxBlock",
+      "focusBlocks",
       "ui-tree-diff",
       "log-event-diff"
     ],

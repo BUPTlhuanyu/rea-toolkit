@@ -29,7 +29,9 @@
   "comparison": {
     "method": "ui-screenshot-and-tree",
     "metrics": [
-      "pixel-diff",
+      "mae",
+      "maxBlock",
+      "focusBlocks",
       "ui-tree-diff"
     ],
     "artifacts": [

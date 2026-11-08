@@ -31,7 +31,9 @@
   "comparison": {
     "method": "browser-screenshot-and-dom",
     "metrics": [
-      "pixel-diff",
+      "mae",
+      "maxBlock",
+      "focusBlocks",
       "dom-diff",
       "network-diff"
     ],

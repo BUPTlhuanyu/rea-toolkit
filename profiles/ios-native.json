@@ -31,7 +31,9 @@
   "comparison": {
     "method": "device-screenshot",
     "metrics": [
-      "pixel-diff",
+      "mae",
+      "maxBlock",
+      "focusBlocks",
       "view-hierarchy-diff"
     ],
     "artifacts": [

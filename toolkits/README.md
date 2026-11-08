@@ -15,8 +15,10 @@ toolkits/
 │   ├── diff.py              # 差异 bbox + 洋红标注
 │   ├── contact_sheet.py     # 多图拼 sheet
 │   └── measure.py           # 连通域/文字行/ink runs
+├── metrics/
+│   └── focus.py             # 全局 MAE + block/focus + 边缘/ΔE 局部簇
 ├── compare/
-│   └── make_compare.py      # 参考/目标上下或左右拼接 + MAE
+│   └── make_compare.py      # 参考/目标上下或左右拼接 + 指标
 ├── capture/
 │   ├── macos_window.py      # macOS 按窗口 ID 截图
 │   └── list_windows.swift   # CGWindowList 窗口列表
@@ -30,6 +32,51 @@ toolkits/
 └── rea/
     └── rea_batch.mjs        # rea MCP 批处理
 ```
+
+## 为什么不是只看 MAE
+
+全局 MAE 会把只占画面一小部分的差异稀释掉：一个错误的图例色块、缺失的引导线、
+小标签的边框，可能在两百万像素里只占几百像素，MAE 仍然很低。
+
+`metrics/focus.py` 提供三层指标：
+
+- 全局 `mae`：兼容旧结果
+- block 指标：`32x32` 分块，输出 `maxBlock`、`focusBlocks`、`focusAreaPct`
+  - `maxBlock`：最差块的平均绝对差
+  - `focusBlocks`：块分数 `> 15` 的块数（默认阈值，可按领域调整）
+- 可选：
+  - `--edges`：边缘结构差（missing / extra）
+  - `--clusters`：CIELAB ΔE 局部簇，先估计整体平移，再用局部最小 ΔE 抑制字形 AA
+
+阈值是 triage 辅助，不是最终判定。WPS 图表对齐里 `maxBlock`/`focusBlocks`
+用的就是 block 32 + focus threshold 15。
+
+## 适用性
+
+focus 指标适合**静态、可复现、像素对齐、差异局部化**的视觉对照，不是所有
+应用类型的默认答案。
+
+| 类型 | 是否适合 | 建议 |
+|---|---|---|
+| WPS/Office 文档、图表渲染 | 很适合 | `mae + maxBlock + focusBlocks + ΔE clusters + edges` |
+| 桌面端窗口/UI | 适合 | 先裁到 client area，固定 DPI/字体，再算 block/ΔE |
+| Android/iOS 静态页面 | 适合 | 固定设备/分辨率/主题/locale；截图 + UI 树一起看 |
+| Web 静态页面 | 适合 | 固定 viewport/DPR、冻结动画、mock 网络；再加 DOM/network diff |
+| 2D/3D 游戏 | 只能作为辅助 | 必须做帧序列 + 输入回放 + 时间对齐 + 场景/物理状态 diff |
+| 动画/视频 | 不完全适合 | 单帧 block 会漏时序问题；用帧序列 + 时间聚合指标 |
+| 协议/解析器/CLI/数据 | 不适合 | 用 JSON/文本/结构化 diff，不要用像素指标 |
+| 音频 | 不适合 | 用波形/频谱/PSNR 等音频指标 |
+
+参数也不是通用的：`block=32 / focus threshold=15` 是针对 1820x1068 图表帧
+标定的。4K、游戏帧、移动端截图需要按分辨率缩放 block，并重新标定阈值。
+
+各领域应在 `profiles/*.json` 的 `comparison.metrics` 里声明实际使用的指标族：
+
+- `pixel`：`mae`、`maxBlock`、`focusBlocks`
+- `perceptual`：`delta-e-clusters`、`ssim`
+- `structure`：`edges`、`ui-tree-diff`、`dom-diff`
+- `semantic`：`network-diff`、`state-diff`、协议/JSON diff
+- `temporal`：`frame-sequence`、`timeline`
 
 ## 快速用法
 
@@ -45,9 +92,14 @@ python3 toolkits/image/diff.py reference.png target.png --out diff.png --json
 python3 toolkits/image/contact_sheet.py --glob 'shots/*.wps.png' \
   --columns 2 --scale 0.5 --out sheet.png
 
-# 对照 + MAE
+# 对照 + 指标（默认包含 maxBlock/focusBlocks）
 python3 toolkits/compare/make_compare.py \
-  --reference wps.png --target ts.png --out cmp.png --labels WPS,TS --mae
+  --reference wps.png --target ts.png --out cmp.png --labels WPS,TS
+
+# 只算指标，不拼图
+python3 toolkits/metrics/focus.py --reference wps.png --target ts.png
+python3 toolkits/metrics/focus.py --reference wps.png --target ts.png \
+  --edges --clusters --crop-dir crops
 
 # macOS 窗口截图
 python3 toolkits/capture/macos_window.py list --app wpsoffice
@@ -61,10 +113,14 @@ python3 toolkits/ooxml/xlsx_patch.py in.xlsx out.xlsx \
   --sub '<c:varyColors val="0"/> => <c:varyColors val="1"/>' \
   --fill A1=100 --fill B2=hello
 
-# 回归
+# 回归（默认算全局 MAE + block 指标）
 python3 toolkits/regress/runner.py --cases cases.json \
   --out-dir runs/current --baseline-dir runs/baseline \
   --shoot 'node shoot.mjs --case {case} --out {target}'
+
+# 全局 MAE 通过、但局部块很差时标 PIXEL_DIFF
+python3 toolkits/regress/runner.py --cases cases.json \
+  --out-dir runs/current --max-block-threshold 25 --focus-blocks-threshold 20
 
 # Frida
 python3 toolkits/frida/run.py --exe ./app --script hook.js --log out.jsonl
@@ -79,7 +135,8 @@ node toolkits/rea/rea_batch.mjs --target ./binary --out out.jsonl \
 
 - Python 3.9+
 - Pillow
-- numpy（`image/measure.py`、`compare/make_compare.py`、`regress/runner.py`）
+- numpy（`image/measure.py`、`metrics/focus.py`、`compare/make_compare.py`、`regress/runner.py`）
+- opencv-python（可选，仅 `metrics/focus.py --clusters` 的 CIELAB ΔE 局部簇需要）
 - frida（`frida/*`）
 - Node 18+（`rea/rea_batch.mjs`）
 - macOS + Xcode command line tools（`capture/*`，`swift` 和 `screencapture`）
@@ -92,7 +149,8 @@ node toolkits/rea/rea_batch.mjs --target ./binary --out out.jsonl \
 | `image/diff.py` | `tools/img_diff.py` |
 | `image/contact_sheet.py` | `tools/contact_sheet.py`（路径/列数参数化） |
 | `image/measure.py` | `tools/measure/blobs.py`、`tools/measure/measure.py`、`tools/measure/txtbox.py` |
-| `compare/make_compare.py` | `tools/render/make-cmp.py` 的 `stack()` + MAE |
+| `metrics/focus.py` | `tools/audit_xlsx_visual_clusters.py`、`tools/audit_xlsx_structure.py`，以及 gallery alignment 的 `maxBlock`/`focusBlocks` |
+| `compare/make_compare.py` | `tools/render/make-cmp.py` 的 `stack()` + 指标 |
 | `capture/macos_window.py` | `tools/run_case.py` 的窗口查找/截图 + `tools/capture_wps_preview.py` 的窗口调整/关闭 |
 | `ooxml/xlsx_patch.py` | `tools/capture_r4.py` 的 `patch_xlsx` |
 | `regress/runner.py` | `tools/regress.py`、`tools/render/deck-regress.py`、`tools/shard_regress.py` 的回归模式 |

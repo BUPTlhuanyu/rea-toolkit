@@ -14,10 +14,15 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
 import numpy as np
 from PIL import Image, ImageDraw
+
+TOOLKITS = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(TOOLKITS))
+from metrics.focus import focus_metrics  # noqa: E402
 
 
 def parse_labels(value: str) -> tuple[str, str]:
@@ -102,6 +107,17 @@ def main() -> int:
     parser.add_argument("--mae", dest="mae", action="store_true", default=True,
                         help="计算 MAE（默认）")
     parser.add_argument("--no-mae", dest="mae", action="store_false")
+    parser.add_argument("--focus", dest="focus", action="store_true", default=True,
+                        help="计算 focus 指标（默认）")
+    parser.add_argument("--no-focus", dest="focus", action="store_false",
+                        help="只输出旧版 MAE")
+    parser.add_argument("--block", type=int, default=32,
+                        help="block 指标的分块大小")
+    parser.add_argument("--focus-threshold", type=float, default=15.0,
+                        help="block 分数超过该值计为 focus block")
+    parser.add_argument("--edges", action="store_true", help="计算边缘结构差")
+    parser.add_argument("--clusters", action="store_true", help="计算 CIELAB ΔE 局部簇")
+    parser.add_argument("--crop-dir", default=None, help="ΔE 簇裁剪图输出目录")
     args = parser.parse_args()
 
     reference = Image.open(args.reference).convert("RGB")
@@ -114,7 +130,20 @@ def main() -> int:
         "target": args.target,
         "size": list(reference.size),
     }
-    if args.mae:
+    if args.focus:
+        metrics = focus_metrics(
+            np.asarray(reference).astype(np.int16),
+            np.asarray(target).astype(np.int16),
+            block=args.block,
+            focus_threshold=args.focus_threshold,
+            include_edges=args.edges,
+            include_clusters=args.clusters,
+            crop_dir=Path(args.crop_dir) if args.crop_dir else None,
+        )
+        if not args.mae:
+            metrics.pop("mae", None)
+        result.update(metrics)
+    elif args.mae:
         result["mae"] = mae(reference, target)
     out_image = stack(
         reference,

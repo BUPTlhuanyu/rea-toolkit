@@ -30,6 +30,9 @@
     "method": "wps-vs-target-screenshot",
     "metrics": [
       "mae",
+      "maxBlock",
+      "focusBlocks",
+      "delta-e-clusters",
       "visual-verdict"
     ],
     "artifacts": [
