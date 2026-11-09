@@ -48,6 +48,7 @@ target/
 
 # Test and coverage
 coverage/
+!toolkits/coverage
 .coverage
 htmlcov/
 .pytest_cache/

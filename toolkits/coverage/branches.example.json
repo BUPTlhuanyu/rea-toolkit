@@ -1,0 +1,55 @@
+{
+  "project": "example-chart",
+  "functions": [
+    {
+      "id": "pieBestFit",
+      "address": "0xf5cfd0",
+      "target": "src/layout/pie-bestfit.ts:42",
+      "branches": [
+        {
+          "id": "b1",
+          "condition": "count == 0",
+          "source": "0xf5cff0",
+          "target": "src/layout/pie-bestfit.ts:48",
+          "true": "return-empty",
+          "false": "b2",
+          "status": "covered",
+          "cases": ["pie/empty"],
+          "note": "空数据直接返回空布局"
+        },
+        {
+          "id": "b2",
+          "condition": "fitMode == FIT",
+          "source": "0xf5d020",
+          "target": "src/layout/pie-bestfit.ts:55",
+          "true": "b3",
+          "false": "b4",
+          "status": "covered",
+          "cases": ["pie/default", "pie/explicit-fit"]
+        },
+        {
+          "id": "b3",
+          "condition": "radius < minRadius",
+          "source": "0xf5d0a0",
+          "target": "src/layout/pie-bestfit.ts:61",
+          "true": "clamp",
+          "false": "b4",
+          "status": "partial",
+          "cases": ["pie/min-radius"],
+          "note": "只覆盖了 true 分支，false 分支还缺边界 case"
+        },
+        {
+          "id": "b4",
+          "condition": "explosion > 0",
+          "source": "0xf5d140",
+          "target": "src/layout/pie-bestfit.ts:68",
+          "true": "explode",
+          "false": "return-layout",
+          "status": "uncovered",
+          "cases": [],
+          "note": "还没有构造 explosion 的 case"
+        }
+      ]
+    }
+  ]
+}
