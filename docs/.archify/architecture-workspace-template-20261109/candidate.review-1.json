@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "复刻工作区模板：组件与数据流",
+    "subtitle": "reconstruction-core/templates/workspace",
+    "locale": "zh-CN",
+    "output": "docs/diagrams/workspace-template-architecture.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/BUPTlhuanyu/rea-toolkit",
+      "provider": "github",
+      "link_mode": "local-only",
+      "revision": "7ff452b2f67cc479ab982bd0fb519582e6a60ddc"
+    }
+  },
+  "layout": {
+    "mode": "grid",
+    "origin": [40, 52],
+    "cols": 5,
+    "gapX": 80,
+    "gapY": 64,
+    "cellW": 176,
+    "cellH": 68
+  },
+  "components": [
+    { "id": "bootstrap", "type": "backend", "label": "bootstrap", "sublabel": "初始化入口", "row": 0, "col": 0, "sources": [{ "path": "skills/reconstruction-bootstrap/scripts/bootstrap.py" }] },
+    { "id": "scaffold", "type": "backend", "label": "scaffold", "sublabel": "复制模板 + 生成 domain", "row": 0, "col": 1, "sources": [{ "path": "skills/reconstruction-scaffold/scripts/scaffold.py" }] },
+    { "id": "state", "type": "database", "label": "state.json", "sublabel": "能力状态机", "row": 0, "col": 2, "sources": [{ "path": "skills/reconstruction-core/templates/workspace/state.json" }] },
+    { "id": "corpus", "type": "database", "label": "corpus/", "sublabel": "provided + derived", "row": 0, "col": 3, "sources": [{ "path": "skills/reconstruction-core/templates/workspace/corpus/derived/README.md" }] },
+    { "id": "reference", "type": "external", "label": "参考实现", "sublabel": "WPS / 设备 / 浏览器", "row": 0, "col": 4 },
+
+    { "id": "core", "type": "backend", "label": "core", "sublabel": "6 阶段流程契约", "row": 1, "col": 0, "sources": [{ "path": "skills/reconstruction-core/SKILL.md" }] },
+    { "id": "pipeline", "type": "security", "label": "PIPELINE.md", "sublabel": "阶段 + Gate + 硬规则", "row": 1, "col": 1, "sources": [{ "path": "skills/reconstruction-core/templates/workspace/PIPELINE.md" }] },
+    { "id": "capabilities", "type": "database", "label": "capabilities/", "sublabel": "index + manifest + dossier", "row": 1, "col": 2, "sources": [{ "path": "skills/reconstruction-core/templates/workspace/tools/capabilities/build_capability_index.py" }] },
+    { "id": "source", "type": "database", "label": "evidence/source/", "sublabel": "反编译/协议结论", "row": 1, "col": 3, "sources": [{ "path": "skills/reconstruction-core/templates/workspace/evidence/source/README.md" }] },
+    { "id": "target", "type": "external", "label": "目标实现", "sublabel": "重写后的代码", "row": 1, "col": 4 },
+
+    { "id": "tools", "type": "backend", "label": "tools/capabilities", "sublabel": "build / validate / show", "row": 2, "col": 0, "sources": [{ "path": "skills/reconstruction-core/templates/workspace/tools/capabilities/build_feature_dossiers.py" }] },
+    { "id": "domain", "type": "security", "label": "domain / profile", "sublabel": "参考端 + 目标端 + 验收", "row": 2, "col": 1, "sources": [{ "path": "skills/reconstruction-scaffold/templates/domain.md" }] },
+    { "id": "dossier", "type": "backend", "label": "feature dossier", "sublabel": "capabilities/<id>/README.md", "row": 2, "col": 2, "sources": [{ "path": "skills/reconstruction-core/templates/workspace/capabilities/_TEMPLATE/README.md" }] },
+    { "id": "runtime", "type": "database", "label": "evidence/runtime/", "sublabel": "Frida / trace / 日志", "row": 2, "col": 3, "sources": [{ "path": "skills/reconstruction-core/templates/workspace/evidence/runtime/README.md" }] },
+    { "id": "runs", "type": "database", "label": "runs/", "sublabel": "run-id + result + shots", "row": 2, "col": 4, "sources": [{ "path": "skills/reconstruction-core/templates/workspace/runs/_TEMPLATE/run.json" }] },
+
+    { "id": "audit", "type": "database", "label": "evidence/audit/", "sublabel": "逐 case 判定", "row": 3, "col": 2, "sources": [{ "path": "skills/reconstruction-core/templates/workspace/evidence/audit/README.md" }] },
+    { "id": "history", "type": "database", "label": "history/", "sublabel": "冻结归档", "row": 3, "col": 4, "sources": [{ "path": "skills/reconstruction-core/templates/workspace/history/rounds/README.md" }] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "控制层：初始化 + 流程 + 工具", "wraps": ["bootstrap", "scaffold", "core", "pipeline", "tools", "domain"] },
+    { "kind": "region", "label": "能力账本：状态 + 索引 + 档案", "wraps": ["state", "capabilities", "dossier"] },
+    { "kind": "region", "label": "输入与证据", "wraps": ["corpus", "source", "runtime", "audit"] },
+    { "kind": "region", "label": "运行产物", "wraps": ["runs", "history"] },
+    { "kind": "region", "label": "外部参考端 / 目标端", "wraps": ["reference", "target"] }
+  ],
+  "connections": [
+    { "id": "bootstrap-scaffold", "from": "bootstrap", "to": "scaffold", "label": "调用", "variant": "emphasis" },
+    { "id": "scaffold-state", "from": "scaffold", "to": "state", "label": "复制模板 / 初始化", "variant": "emphasis" },
+    { "id": "scaffold-domain", "from": "scaffold", "to": "domain", "label": "生成领域配置", "variant": "default" },
+    { "id": "core-pipeline", "from": "core", "to": "pipeline", "label": "读流程", "variant": "default" },
+    { "id": "pipeline-state", "from": "pipeline", "to": "state", "label": "Gate / 更新状态", "variant": "security" },
+    { "id": "tools-capabilities", "from": "tools", "to": "capabilities", "label": "build / validate", "variant": "emphasis" },
+    { "id": "state-capabilities", "from": "state", "to": "capabilities", "label": "features", "variant": "emphasis" },
+    { "id": "corpus-capabilities", "from": "corpus", "to": "capabilities", "label": "case.json", "variant": "default" },
+    { "id": "source-capabilities", "from": "source", "to": "capabilities", "label": "source refs", "variant": "dashed" },
+    { "id": "runtime-capabilities", "from": "runtime", "to": "capabilities", "label": "runtime refs", "variant": "dashed" },
+    { "id": "audit-capabilities", "from": "audit", "to": "capabilities", "label": "verdicts", "variant": "dashed" },
+    { "id": "capabilities-dossier", "from": "capabilities", "to": "dossier", "label": "生成档案", "variant": "emphasis" },
+    { "id": "reference-runs", "from": "reference", "to": "runs", "label": "参考输出", "variant": "default" },
+    { "id": "target-runs", "from": "target", "to": "runs", "label": "目标输出", "variant": "default" },
+    { "id": "runs-capabilities", "from": "runs", "to": "capabilities", "label": "effect verdict", "variant": "emphasis" },
+    { "id": "runs-history", "from": "runs", "to": "history", "label": "归档", "variant": "dashed" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "模板的职责",
+      "items": [
+        "把流程、目录、状态、证据和账本固定下来",
+        "让不同模型/会话都能按同一套路径继续",
+        "领域差异只写 domain/profile，不改流程骨架"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "关键生成物",
+      "items": [
+        "state.json 是能力状态源头",
+        "capabilities/index.json 是能力视角",
+        "case-manifest.json 是 case 视角",
+        "capabilities/<id>/README.md 是叙事入口"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "不要手改",
+      "items": [
+        "index.json / case-manifest.json / capabilities/README.md",
+        "dossier 的 GENERATED 块",
+        "runs/regress-baseline 与 history/"
+      ]
+    }
+  ]
+}

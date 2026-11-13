@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "2efaf2de-f0fb-4a0f-a182-447acb2d1f15",
+  "status": "current",
+  "command": "deliver",
+  "type": "workflow",
+  "input": "/Users/liaohuanyu/projects/ai/idea/rea-toolkit/docs/.archify/workflow-workspace-template-20261109/candidate.json",
+  "output": "/Users/liaohuanyu/projects/ai/idea/rea-toolkit/docs/diagrams/workspace-template-workflow.html",
+  "specification": {
+    "sha256": "776557873036826d2fec3e9f84274ab25ee16369ccfc01897f69054a064f114e",
+    "bytes": 7274
+  },
+  "artifact": {
+    "sha256": "270d36ce444b6a985a2eec622fdcadb38a05cab6052b11144f07af128072f997",
+    "bytes": 772057
+  }
+}

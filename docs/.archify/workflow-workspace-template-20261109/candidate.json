@@ -1,0 +1,98 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "复刻工作区模板：6 阶段运转流程",
+    "subtitle": "从 Intake 到收口，每一步写回固定目录",
+    "locale": "zh-CN",
+    "output": "docs/diagrams/workspace-template-workflow.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/BUPTlhuanyu/rea-toolkit",
+      "provider": "github",
+      "link_mode": "local-only",
+      "revision": "7ff452b2f67cc479ab982bd0fb519582e6a60ddc"
+    }
+  },
+  "lanes": [
+    { "id": "pipeline", "label": "流程（PIPELINE）" },
+    { "id": "artifacts", "label": "工作区产物" },
+    { "id": "external", "label": "参考端 / 目标端" }
+  ],
+  "phases": [
+    { "id": "p0", "label": "Stage 0 Intake", "fromCol": 0, "toCol": 0 },
+    { "id": "p1", "label": "Stage 1 Source", "fromCol": 1, "toCol": 1 },
+    { "id": "p2", "label": "Stage 2 Case", "fromCol": 2, "toCol": 2 },
+    { "id": "p3", "label": "Stage 3 Reference", "fromCol": 3, "toCol": 3 },
+    { "id": "p4", "label": "Stage 4 Implement", "fromCol": 4, "toCol": 4, "variant": "emphasis" },
+    { "id": "p5", "label": "Stage 5-6 Close", "fromCol": 5, "toCol": 5, "variant": "security" }
+  ],
+  "groups": [
+    { "id": "ledger", "label": "能力账本", "lane": "artifacts", "fromCol": 0, "toCol": 2, "variant": "emphasis" },
+    { "id": "run", "label": "Run + 回归", "lane": "artifacts", "fromCol": 4, "toCol": 4, "variant": "security" },
+    { "id": "close", "label": "收口产物", "lane": "artifacts", "fromCol": 5, "toCol": 5, "variant": "dashed" }
+  ],
+  "mainPath": ["intake", "source", "case", "reference", "implement", "verify"],
+  "nodes": [
+    { "id": "intake", "lane": "pipeline", "col": 0, "type": "backend", "label": "Stage 0 Intake", "sublabel": "feature + dossier", "width": 126, "sources": [{ "path": "skills/reconstruction-core/templates/workspace/PIPELINE.md" }] },
+    { "id": "source", "lane": "pipeline", "col": 1, "type": "backend", "label": "Stage 1 Source", "sublabel": "反编译 / 协议取证", "width": 126, "sources": [{ "path": "skills/reconstruction-core/templates/workspace/evidence/source/README.md" }] },
+    { "id": "case", "lane": "pipeline", "col": 2, "type": "backend", "label": "Stage 2 Case", "sublabel": "默认 / 显式 / 边界", "width": 126, "sources": [{ "path": "skills/reconstruction-core/templates/workspace/corpus/derived/README.md" }] },
+    { "id": "reference", "lane": "pipeline", "col": 3, "type": "backend", "label": "Stage 3 Reference", "sublabel": "参考输出", "width": 126, "sources": [{ "path": "skills/reconstruction-core/templates/workspace/evidence/runtime/README.md" }] },
+    { "id": "implement", "lane": "pipeline", "col": 4, "type": "backend", "label": "Stage 4 Implement", "sublabel": "目标代码 + 测试", "width": 126 },
+    { "id": "verify", "lane": "pipeline", "col": 5, "type": "security", "label": "Stage 5-6 Close", "sublabel": "对照 + 回归 + 收口", "width": 142, "sources": [{ "path": "skills/reconstruction-core/templates/workspace/tools/capabilities/validate_capability_ids.py" }] },
+
+    { "id": "state", "lane": "artifacts", "col": 0, "type": "database", "label": "state.json", "sublabel": "features / queue", "width": 126, "sources": [{ "path": "skills/reconstruction-core/templates/workspace/state.json" }] },
+    { "id": "evidence", "lane": "artifacts", "col": 1, "type": "database", "label": "evidence/", "sublabel": "source / runtime", "width": 126, "sources": [{ "path": "skills/reconstruction-core/templates/workspace/evidence/audit/README.md" }] },
+    { "id": "capabilities", "lane": "artifacts", "col": 2, "type": "database", "label": "capabilities/", "sublabel": "index + dossier", "width": 126, "sources": [{ "path": "skills/reconstruction-core/templates/workspace/capabilities/index.json" }] },
+    { "id": "runs", "lane": "artifacts", "col": 4, "type": "database", "label": "runs/<run-id>", "sublabel": "result + shots", "width": 126, "sources": [{ "path": "skills/reconstruction-core/templates/workspace/runs/_TEMPLATE/run.json" }] },
+    { "id": "dossier", "lane": "artifacts", "col": 5, "type": "backend", "label": "feature dossier", "sublabel": "capabilities/<id>", "width": 142, "sources": [{ "path": "skills/reconstruction-core/templates/workspace/capabilities/_TEMPLATE/README.md" }] },
+
+    { "id": "reference-external", "lane": "external", "col": 3, "type": "external", "label": "参考实现", "sublabel": "WPS / 设备 / 浏览器", "width": 126 },
+    { "id": "target-external", "lane": "external", "col": 4, "type": "external", "label": "目标实现", "sublabel": "重写后的代码", "width": 126 }
+  ],
+  "edges": [
+    { "id": "intake-source", "from": "intake", "to": "source", "label": "分支表", "variant": "emphasis", "role": "main" },
+    { "id": "source-case", "from": "source", "to": "case", "label": "构造 case", "variant": "emphasis", "role": "main" },
+    { "id": "case-reference", "from": "case", "to": "reference", "label": "跑参考端", "variant": "emphasis", "role": "main" },
+    { "id": "reference-implement", "from": "reference", "to": "implement", "label": "对照实现", "variant": "emphasis", "role": "main" },
+    { "id": "implement-verify", "from": "implement", "to": "verify", "label": "单测 + 定向回归", "variant": "security", "role": "main" },
+
+    { "id": "intake-state", "from": "intake", "to": "state", "label": "登记 feature", "variant": "default", "role": "branch" },
+    { "id": "source-evidence", "from": "source", "to": "evidence", "label": "写结论", "variant": "dashed", "role": "branch" },
+    { "id": "case-capabilities", "from": "case", "to": "capabilities", "label": "case.json", "variant": "default", "role": "branch" },
+    { "id": "reference-runs", "from": "reference", "to": "runs", "label": "参考输出", "variant": "default", "role": "branch" },
+    { "id": "implement-runs", "from": "implement", "to": "runs", "label": "目标输出", "variant": "default", "role": "branch" },
+    { "id": "verify-dossier", "from": "verify", "to": "dossier", "label": "刷新档案 + 收口", "variant": "emphasis", "role": "branch" },
+    { "id": "external-reference", "from": "reference-external", "to": "reference", "label": "采集", "variant": "default", "role": "branch" },
+    { "id": "external-target", "from": "target-external", "to": "implement", "label": "实现", "variant": "default", "role": "branch" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Gate 判据",
+      "items": [
+        "Stage 0：feature-id、dossier、case 登记完成",
+        "Stage 5：effect MATCH/ACCEPTED_NONPORTABLE，且无新增 regression",
+        "Stage 6：index 重建、dossier 刷新、validate 通过"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "不要跳过",
+      "items": [
+        "没有 evidence 文件不算源码取证",
+        "没有参考输出不算效果对齐",
+        "没有 run-id 不算回归完成"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "收口产物",
+      "items": [
+        "state.json 的 source/effect 状态已更新",
+        "capabilities/index.json + case-manifest.json 已重建",
+        "capabilities/<feature-id>/README.md 能独立讲清还原过程"
+      ]
+    }
+  ]
+}

@@ -394,7 +394,14 @@ python3 tools/capabilities/validate_capability_ids.py
 
 ---
 
-## 5. `capabilities/<feature-id>/README.md` 模板
+## 5. 能力档案（dossier）模板：`capabilities/<feature-id>/README.md`
+
+dossier 是**单个能力的档案/故事**，不是代码模板。模板文件在
+`capabilities/_TEMPLATE/README.md`；新建能力时复制它到
+`capabilities/<feature-id>/README.md`。
+
+模板保证每个能力都回答同一组问题：观察到什么、源码依据是什么、用了哪些 case、
+改了哪里、怎么验证、还差什么。
 
 ```markdown
 # <能力名> (`<feature-id>`)

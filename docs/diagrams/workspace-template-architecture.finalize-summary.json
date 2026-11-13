@@ -1,0 +1,296 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "architecture",
+  "quality": "showcase",
+  "specification": {
+    "path": "/Users/liaohuanyu/projects/ai/idea/rea-toolkit/docs/.archify/architecture-workspace-template-20261109/candidate.json",
+    "sha256": "b1ab2706fc965f2e01b5ba448f5863309ee7b4bbea3550c06e5c8cf2a8103901",
+    "bytes": 7621
+  },
+  "artifact": {
+    "path": "/Users/liaohuanyu/projects/ai/idea/rea-toolkit/docs/diagrams/workspace-template-architecture.html",
+    "sha256": "45b58d164eaa5403c5e40c02fd6b523fd54cdc1175466e8f6525e4c1022795ba",
+    "bytes": 784608
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "pass"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "/Users/liaohuanyu/projects/ai/idea/rea-toolkit/docs/diagrams/workspace-template-architecture.finalize.json",
+    "summaryReceipt": "/Users/liaohuanyu/projects/ai/idea/rea-toolkit/docs/diagrams/workspace-template-architecture.finalize-summary.json",
+    "browserCheckReceipt": "/Users/liaohuanyu/projects/ai/idea/rea-toolkit/docs/diagrams/workspace-template-architecture.browser-check.json"
+  },
+  "update": {
+    "status": "update_available",
+    "installedVersion": "3.0.1",
+    "availableVersion": "3.2.0",
+    "releaseNotes": "https://github.com/tt-a1i/archify/releases/tag/v3.2.0",
+    "severity": "normal",
+    "checkedAt": "2026-11-12T01:56:47.266Z",
+    "source": "cache",
+    "noticeRequired": true,
+    "noticeText": "Archify update: 3.0.1 → 3.2.0. A previous check at 2026-11-12T01:56:47.266Z found a newer release. Release notes: https://github.com/tt-a1i/archify/releases/tag/v3.2.0. The installed Skill has not changed; ask to snooze or ignore this reminder.",
+    "eventKey": "archify@sha256:70e210265c59f24dcbdf2a502ff671104b5454e7ee7d3554aecd86bad32384f5"
+  },
+  "visualReview": "not-requested",
+  "durationMs": 5743,
+  "visualReviewRecommendation": {
+    "action": "inspect-route-readability",
+    "signals": {
+      "resolvedCrossovers": 6,
+      "routesOverSuggestedBends": 3,
+      "routesOverSuggestedStretch": 1
+    },
+    "reason": "Automated gates passed, but crossings or detours still need perceptual review before claiming visual quality.",
+    "affectedRoutes": {
+      "crossings": [
+        {
+          "left": {
+            "id": "scaffold-domain",
+            "from": "scaffold",
+            "to": "domain",
+            "label": "生成领域配置",
+            "collectionIndex": 2,
+            "artifactIndex": 3
+          },
+          "right": {
+            "id": "core-pipeline",
+            "from": "core",
+            "to": "pipeline",
+            "label": "读流程",
+            "collectionIndex": 3,
+            "artifactIndex": 4
+          },
+          "point": [
+            272,
+            214
+          ]
+        },
+        {
+          "left": {
+            "id": "scaffold-domain",
+            "from": "scaffold",
+            "to": "domain",
+            "label": "生成领域配置",
+            "collectionIndex": 2,
+            "artifactIndex": 3
+          },
+          "right": {
+            "id": "tools-capabilities",
+            "from": "tools",
+            "to": "capabilities",
+            "label": "build / validate",
+            "collectionIndex": 5,
+            "artifactIndex": 6
+          },
+          "point": [
+            272,
+            280
+          ]
+        },
+        {
+          "left": {
+            "id": "tools-capabilities",
+            "from": "tools",
+            "to": "capabilities",
+            "label": "build / validate",
+            "collectionIndex": 5,
+            "artifactIndex": 6
+          },
+          "right": {
+            "id": "capabilities-dossier",
+            "from": "capabilities",
+            "to": "dossier",
+            "label": "生成档案",
+            "collectionIndex": 11,
+            "artifactIndex": 12
+          },
+          "point": [
+            528,
+            280
+          ],
+          "sharedNode": "capabilities"
+        },
+        {
+          "left": {
+            "id": "runtime-capabilities",
+            "from": "runtime",
+            "to": "capabilities",
+            "label": "runtime refs",
+            "collectionIndex": 9,
+            "artifactIndex": 10
+          },
+          "right": {
+            "id": "audit-capabilities",
+            "from": "audit",
+            "to": "capabilities",
+            "label": "verdicts",
+            "collectionIndex": 10,
+            "artifactIndex": 11
+          },
+          "point": [
+            696.0000000000001,
+            280.00000000000006
+          ],
+          "sharedNode": "capabilities"
+        },
+        {
+          "left": {
+            "id": "runtime-capabilities",
+            "from": "runtime",
+            "to": "capabilities",
+            "label": "runtime refs",
+            "collectionIndex": 9,
+            "artifactIndex": 10
+          },
+          "right": {
+            "id": "runs-capabilities",
+            "from": "runs",
+            "to": "capabilities",
+            "label": "effect verdict",
+            "collectionIndex": 14,
+            "artifactIndex": 15
+          },
+          "point": [
+            868,
+            292
+          ],
+          "sharedNode": "capabilities"
+        },
+        {
+          "left": {
+            "id": "audit-capabilities",
+            "from": "audit",
+            "to": "capabilities",
+            "label": "verdicts",
+            "collectionIndex": 10,
+            "artifactIndex": 11
+          },
+          "right": {
+            "id": "runs-capabilities",
+            "from": "runs",
+            "to": "capabilities",
+            "label": "effect verdict",
+            "collectionIndex": 14,
+            "artifactIndex": 15
+          },
+          "point": [
+            696,
+            292
+          ],
+          "sharedNode": "capabilities"
+        }
+      ],
+      "detours": [
+        {
+          "relationship": {
+            "id": "scaffold-domain",
+            "from": "scaffold",
+            "to": "domain",
+            "label": "生成领域配置",
+            "collectionIndex": 2,
+            "artifactIndex": 3
+          },
+          "bends": 3,
+          "stretch": 1.163,
+          "directCorridorBlockers": [
+            {
+              "id": "pipeline",
+              "label": "PIPELINE.md",
+              "box": [
+                296,
+                184,
+                120,
+                60
+              ]
+            }
+          ]
+        },
+        {
+          "relationship": {
+            "id": "audit-capabilities",
+            "from": "audit",
+            "to": "capabilities",
+            "label": "verdicts",
+            "collectionIndex": 10,
+            "artifactIndex": 11
+          },
+          "bends": 3,
+          "stretch": 1.156,
+          "directCorridorBlockers": [
+            {
+              "id": "dossier",
+              "label": "feature dossier",
+              "box": [
+                552,
+                316,
+                120,
+                60
+              ]
+            }
+          ]
+        },
+        {
+          "relationship": {
+            "id": "capabilities-dossier",
+            "from": "capabilities",
+            "to": "dossier",
+            "label": "生成档案",
+            "collectionIndex": 11,
+            "artifactIndex": 12
+          },
+          "bends": 2,
+          "stretch": 1.364
+        },
+        {
+          "relationship": {
+            "id": "reference-runs",
+            "from": "reference",
+            "to": "runs",
+            "label": "参考输出",
+            "collectionIndex": 12,
+            "artifactIndex": 13
+          },
+          "bends": 3,
+          "stretch": 1.163,
+          "directCorridorBlockers": [
+            {
+              "id": "target",
+              "label": "目标实现",
+              "box": [
+                1064,
+                184,
+                120,
+                60
+              ]
+            }
+          ]
+        }
+      ],
+      "truncated": false
+    },
+    "hints": [
+      "capabilities has 4 relationships facing its right side, which fits 3 ports: make that side at least 74px, or move some of those neighbours so they face another side of capabilities.",
+      "scaffold → domain crosses core → pipeline: move the node of whichever is a branch, return, or second entrance to the other side of the main path, so that relationship runs through an empty corridor.",
+      "scaffold → domain crosses tools → capabilities: move the node of whichever is a branch, return, or second entrance to the other side of the main path, so that relationship runs through an empty corridor.",
+      "tools → capabilities and capabilities → dossier cross next to capabilities: move node tools or dossier so the two reach capabilities from different sides (for example one level with it, one directly above or below it).",
+      "runtime → capabilities and audit → capabilities cross next to capabilities: move node runtime or audit so the two reach capabilities from different sides (for example one level with it, one directly above or below it).",
+      "runtime → capabilities and runs → capabilities cross next to capabilities: move node runtime or runs so the two reach capabilities from different sides (for example one level with it, one directly above or below it).",
+      "audit → capabilities and runs → capabilities cross next to capabilities: move node audit or runs so the two reach capabilities from different sides (for example one level with it, one directly above or below it).",
+      "capabilities → dossier needs 2 bends: move node capabilities or dossier so they share a row or column with matching centers, or sit diagonally with a clear corner."
+    ],
+    "repair": "Trace these relationships at the desktop viewport. For Architecture, use references/architecture-layout-repair.md: reflow a blocked main path or tangled connected scene, and repair an isolated defect locally only when the surrounding composition is accepted. Preserve all semantic content and user-fixed geometry. Rerun finalize once after the edit."
+  }
+}

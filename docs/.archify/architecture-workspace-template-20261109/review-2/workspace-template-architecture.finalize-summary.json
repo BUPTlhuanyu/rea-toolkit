@@ -1,0 +1,202 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "architecture",
+  "quality": "showcase",
+  "specification": {
+    "path": "/Users/liaohuanyu/projects/ai/idea/rea-toolkit/docs/.archify/architecture-workspace-template-20261109/candidate.json",
+    "sha256": "bbbe471a6cce9dc0d0c00543ab620d287ac35d5632a42bbbac70acbe15416245",
+    "bytes": 7621
+  },
+  "artifact": {
+    "path": "/Users/liaohuanyu/projects/ai/idea/rea-toolkit/docs/diagrams/workspace-template-architecture.html",
+    "sha256": "d1b89130e8ed20dbbca76b9ad54be9e3a3679748040cb69be759edf2b5bd1fe1",
+    "bytes": 784863
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "pass"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "/Users/liaohuanyu/projects/ai/idea/rea-toolkit/docs/.archify/architecture-workspace-template-20261109/review-2/workspace-template-architecture.finalize.json",
+    "summaryReceipt": "/Users/liaohuanyu/projects/ai/idea/rea-toolkit/docs/.archify/architecture-workspace-template-20261109/review-2/workspace-template-architecture.finalize-summary.json",
+    "browserCheckReceipt": "/Users/liaohuanyu/projects/ai/idea/rea-toolkit/docs/.archify/architecture-workspace-template-20261109/review-2/workspace-template-architecture.browser-check.json"
+  },
+  "update": {
+    "status": "update_available",
+    "installedVersion": "3.0.1",
+    "availableVersion": "3.2.0",
+    "releaseNotes": "https://github.com/tt-a1i/archify/releases/tag/v3.2.0",
+    "severity": "normal",
+    "checkedAt": "2026-11-12T01:56:47.266Z",
+    "source": "cache",
+    "noticeRequired": true,
+    "noticeText": "Archify update: 3.0.1 → 3.2.0. A previous check at 2026-11-12T01:56:47.266Z found a newer release. Release notes: https://github.com/tt-a1i/archify/releases/tag/v3.2.0. The installed Skill has not changed; ask to snooze or ignore this reminder.",
+    "eventKey": "archify@sha256:70e210265c59f24dcbdf2a502ff671104b5454e7ee7d3554aecd86bad32384f5"
+  },
+  "visualReview": "not-requested",
+  "durationMs": 1704,
+  "visualReviewRecommendation": {
+    "action": "inspect-route-readability",
+    "signals": {
+      "resolvedCrossovers": 4,
+      "routesOverSuggestedBends": 3
+    },
+    "reason": "Automated gates passed, but crossings or detours still need perceptual review before claiming visual quality.",
+    "affectedRoutes": {
+      "crossings": [
+        {
+          "left": {
+            "id": "tools-capabilities",
+            "from": "tools",
+            "to": "capabilities",
+            "label": "build / validate",
+            "collectionIndex": 5,
+            "artifactIndex": 6
+          },
+          "right": {
+            "id": "source-capabilities",
+            "from": "source",
+            "to": "capabilities",
+            "label": "source refs",
+            "collectionIndex": 8,
+            "artifactIndex": 9
+          },
+          "point": [
+            500,
+            280
+          ],
+          "sharedNode": "capabilities"
+        },
+        {
+          "left": {
+            "id": "tools-capabilities",
+            "from": "tools",
+            "to": "capabilities",
+            "label": "build / validate",
+            "collectionIndex": 5,
+            "artifactIndex": 6
+          },
+          "right": {
+            "id": "audit-capabilities",
+            "from": "audit",
+            "to": "capabilities",
+            "label": "verdicts",
+            "collectionIndex": 10,
+            "artifactIndex": 11
+          },
+          "point": [
+            528,
+            280
+          ],
+          "sharedNode": "capabilities"
+        },
+        {
+          "left": {
+            "id": "capabilities-dossier",
+            "from": "capabilities",
+            "to": "dossier",
+            "label": "生成档案",
+            "collectionIndex": 11,
+            "artifactIndex": 12
+          },
+          "right": {
+            "id": "runs-capabilities",
+            "from": "runs",
+            "to": "capabilities",
+            "label": "effect verdict",
+            "collectionIndex": 14,
+            "artifactIndex": 15
+          },
+          "point": [
+            770,
+            267.99999999999994
+          ],
+          "sharedNode": "capabilities"
+        },
+        {
+          "left": {
+            "id": "reference-runs",
+            "from": "reference",
+            "to": "runs",
+            "label": "参考输出",
+            "collectionIndex": 12,
+            "artifactIndex": 13
+          },
+          "right": {
+            "id": "target-runs",
+            "from": "target",
+            "to": "runs",
+            "label": "目标输出",
+            "collectionIndex": 13,
+            "artifactIndex": 14
+          },
+          "point": [
+            1061,
+            214
+          ],
+          "sharedNode": "runs"
+        }
+      ],
+      "detours": [
+        {
+          "relationship": {
+            "id": "scaffold-domain",
+            "from": "scaffold",
+            "to": "domain",
+            "label": "生成领域配置",
+            "collectionIndex": 2,
+            "artifactIndex": 3
+          },
+          "bends": 3,
+          "stretch": 1.07
+        },
+        {
+          "relationship": {
+            "id": "capabilities-dossier",
+            "from": "capabilities",
+            "to": "dossier",
+            "label": "生成档案",
+            "collectionIndex": 11,
+            "artifactIndex": 12
+          },
+          "bends": 3,
+          "stretch": 1.253
+        },
+        {
+          "relationship": {
+            "id": "reference-runs",
+            "from": "reference",
+            "to": "runs",
+            "label": "参考输出",
+            "collectionIndex": 12,
+            "artifactIndex": 13
+          },
+          "bends": 4,
+          "stretch": 1
+        }
+      ],
+      "truncated": false
+    },
+    "hints": [
+      "tools → capabilities and source → capabilities cross next to capabilities: move node tools or source so the two reach capabilities from different sides (for example one level with it, one directly above or below it).",
+      "tools → capabilities and audit → capabilities cross next to capabilities: move node tools or audit so the two reach capabilities from different sides (for example one level with it, one directly above or below it).",
+      "capabilities → dossier and runs → capabilities cross next to capabilities: move node dossier or runs so the two reach capabilities from different sides (for example one level with it, one directly above or below it).",
+      "reference → runs and target → runs cross next to runs: move node reference or target so the two reach runs from different sides (for example one level with it, one directly above or below it).",
+      "scaffold → domain needs 3 bends: move node scaffold or domain so they share a row or column with matching centers, or sit diagonally with a clear corner.",
+      "capabilities → dossier needs 3 bends: move node capabilities or dossier so they share a row or column with matching centers, or sit diagonally with a clear corner.",
+      "reference → runs needs 4 bends: move node reference or runs so they share a row or column with matching centers, or sit diagonally with a clear corner."
+    ],
+    "repair": "Trace these relationships at the desktop viewport. For Architecture, use references/architecture-layout-repair.md: reflow a blocked main path or tangled connected scene, and repair an isolated defect locally only when the surrounding composition is accepted. Preserve all semantic content and user-fixed geometry. Rerun finalize once after the edit."
+  }
+}

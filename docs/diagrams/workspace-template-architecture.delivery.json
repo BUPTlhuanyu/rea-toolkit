@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "289fa0a8-d75a-44c4-9277-51893951c0ac",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "/Users/liaohuanyu/projects/ai/idea/rea-toolkit/docs/.archify/architecture-workspace-template-20261109/candidate.json",
+  "output": "/Users/liaohuanyu/projects/ai/idea/rea-toolkit/docs/diagrams/workspace-template-architecture.html",
+  "specification": {
+    "sha256": "bbbe471a6cce9dc0d0c00543ab620d287ac35d5632a42bbbac70acbe15416245",
+    "bytes": 7621
+  },
+  "artifact": {
+    "sha256": "d1b89130e8ed20dbbca76b9ad54be9e3a3679748040cb69be759edf2b5bd1fe1",
+    "bytes": 784863
+  }
+}
